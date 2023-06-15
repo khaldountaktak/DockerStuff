@@ -1,0 +1,43 @@
+services:
+  # apacheServer1:
+  #   image: apachetestphp
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     my_network:
+  #       ipv4_address: ${APACHE_SERVER1_IP}
+  # apacheServer2:
+  #   image: apachetestphp
+  #   ports:
+  #     - "8080:80"
+  #   networks:
+  #     my_network:
+  #       ipv4_address: ${APACHE_SERVER2_IP}
+  HAProxy:
+    image: haproxytech/haproxy-ubuntu
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
+    networks:
+      my_network:
+        ipv4_address: ${HAPROXY_IP}
+    # depends_on:
+    #   - apacheServer1
+    #   - apacheServer2
+    volumes:
+      - ./config/:/usr/local/etc/haproxy/:rw
+    ports:
+      - "55:5555"
+      - "80:80"
+  # curl_process:
+  #   image: curlimages/curl:8.1.1
+  #   command: ["${HAPROXY_IP}", "${HAPROXY_IP}"]
+  #   networks:
+  #     - my_network
+  #   depends_on:
+  #     - HAProxy
+      
+networks:
+  my_network:
+    ipam:
+      config:
+        - subnet: ${SUBNET}
